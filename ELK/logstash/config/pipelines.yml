@@ -1,0 +1,13 @@
+# This file is where you define your pipelines. You can define multiple.
+# For more information on multiple pipelines, see the documentation:
+#   https://www.elastic.co/guide/en/logstash/current/multiple-pipelines.html
+
+- pipeline.id: test
+  path.config: "/usr/share/logstash/pipeline/test.conf"
+  pipeline.workers: 2
+  queue.type: persisted
+
+- pipeline.id: WebLogic_1
+  path.config: "/usr/share/logstash/pipeline/wls-rest.conf"
+  pipeline.workers: 2
+  queue.type: persisted
