@@ -1,0 +1,80 @@
+version: "3.3"
+
+services:
+  es-master-01:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:${VERSION}"
+    container_name: es-master-01
+    environment:
+      - node.name=es-master-01
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=${ES_PASSWORD}
+      - xpack.monitoring.collection.enabled=true
+      - xpack.license.self_generated.type=basic
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certificates/es-master-01/es-master-01.crt
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certificates/es-master-01/es-master-01.key
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certificates/es-master-01/es-master-01.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certificates/es-master-01/es-master-01.crt
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - /home/ubuntu/jenkins/workspace/Git-job/docker-elk/data1:/usr/share/elasticsearch/data
+      - certs:/usr/share/elasticsearch/config/certificates
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+    
+    
+  kibana-01:
+    image: docker.elastic.co/kibana/kibana:7.10.1
+    container_name: kibana-01
+    ports:
+      - 5601:5601
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - ELASTICSEARCH_HOSTS=["https://es-master-01:9200"]
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/elasticsearch/config/certificates/ca/ca.crt
+      - ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ES_PASSWORD}
+      - XPACK_SECURITY_ENCRYPTIONKEY=LTJ5MqjGrpug8ZJEufJjnUqJSFL5p2PBBFqyh6q5hnCQcCd4yQVTJT9FJMTPNys4
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=ES9XuK2uKB4cqBSX9zqg79zhzWtphGSJLWA7pRnx4ev2jHzef7CAMkMYCZcwjKq2 
+      - SERVER_SSL_ENABLED=true
+      - monitoring.ui.container.elasticsearch.enabled=true
+      - SERVER_SSL_KEY=/usr/share/elasticsearch/config/certificates/kibana-01/kibana-01.key
+      - SERVER_SSL_CERTIFICATE=/usr/share/elasticsearch/config/certificates/kibana-01/kibana-01.crt    
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certificates
+    networks:
+      - elastic
+    depends_on:
+      - es-master-01
+
+volumes:
+  es-master-01:
+    driver: local
+    driver_opts:
+     o: bind
+     type: none
+     device: /data1/es-master-01
+  certs:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge

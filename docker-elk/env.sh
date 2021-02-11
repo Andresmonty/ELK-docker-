@@ -1,0 +1,6 @@
+export VERSION=7.10.1
+export LOGSTASH_CONF_DIR=$PWD/logstash/pipeline
+export ES_PASSWORD=elastic
+export CERTS_DIR=/usr/share/elasticsearch/config/certificates
+export XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=ES9XuK2uKB4cqBSX9zqg79zhzWtphGSJLWA7pRnx4ev2jHzef7CAMkMYCZcwjKq2
+export XPACK_SECURITY_ENCRYPTIONKEY=LTJ5MqjGrpug8ZJEufJjnUqJSFL5p2PBBFqyh6q5hnCQcCd4yQVTJT9FJMTPNys4
